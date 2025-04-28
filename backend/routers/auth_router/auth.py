@@ -7,7 +7,7 @@ from utils.login_logic import base_login
 from fastapi import Body
 from schemas.auth_schemas import UserLogin
 
-router = APIRouter(prefix="/auth", tags=["auth"])
+router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 
 @router.post("/login", status_code=response_status.HTTP_200_OK)

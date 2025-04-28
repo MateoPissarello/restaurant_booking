@@ -10,7 +10,7 @@ from models import User
 hash = Hash()
 
 
-router = APIRouter(prefix="/users", tags=["users"])
+router = APIRouter(prefix="/users", tags=["Users"])
 
 
 @router.post("/create", response_model=RetrieveUserBase, status_code=status_code.HTTP_201_CREATED)

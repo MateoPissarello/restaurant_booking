@@ -1,6 +1,6 @@
 from fastapi import Depends, HTTPException, status
 from schemas.auth_schemas import TokenData
-from get_current_user import get_current_user  # función que decodifica el JWT y retorna el usuario
+from utils.get_current_user import get_current_user
 
 
 class RoleChecker:

@@ -34,6 +34,9 @@ class Restaurant(Base):
     __tablename__ = "restaurants"
     restaurant_id = Column(Integer, primary_key=True, index=True)
     name = Column(String, unique=True, nullable=False)
+    description = Column(String, nullable=False)
+    restaurant_type = Column(String, nullable=False)
+    phone_number = Column(String, nullable=False)
     address = Column(String, nullable=False)
 
 
@@ -64,4 +67,5 @@ class Booking(Base):
     date = Column(Date, nullable=False)
     start_time = Column(Time, nullable=False)
     end_time = Column(Time, nullable=False)
+    number_of_people = Column(Integer, nullable=False)
     __table_args__ = (UniqueConstraint("user_id", "table_id", "date", name="unique_booking"),)
