@@ -20,7 +20,7 @@ class BookingDao:
         self.db.refresh(booking)
         return booking
 
-    def get_booking_by_user(self, user_id: int) -> List[Booking]:
+    def get_bookings_by_user(self, user_id: int) -> List[Booking]:
         bookings = self.db.query(Booking).filter(Booking.user_id == user_id).all()
         return bookings
 
@@ -45,6 +45,22 @@ class BookingDao:
             self.db.commit()
             return True
         return False
+
+    def is_table_reserved_excluding_current(
+        self, booking_id, restaurant_id: int, table_id: int, date: dt, start_time: time, end_time: time
+    ) -> bool:
+        conflict = (
+            self.db.query(Booking)
+            .filter(
+                Booking.restaurant_id == restaurant_id,
+                Booking.table_id == table_id,
+                Booking.date == date,
+                and_(Booking.start_time < end_time, Booking.end_time > start_time),
+            )
+            .filter(Booking.booking_id != booking_id)
+            .first()
+        )
+        return conflict is not None
 
     def is_table_reserved(self, restaurant_id: int, table_id: int, date: dt, start_time: time, end_time: time) -> bool:
         conflict = (
