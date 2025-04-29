@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import ReservationModal from "./ReservationModal"; // Nuevo modal de reservas
 import ScheduleModal from "./ScheduleModal"; // Asegúrate que la ruta esté correcta
 
 interface Restaurant {
@@ -13,10 +14,12 @@ interface Restaurant {
 
 const MakeReservation = () => {
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
-  const [selectedRestaurantId, setSelectedRestaurantId] = useState<
-    number | null
-  >(null);
-  const navigate = useNavigate();
+  const [selectedRestaurantIdForSchedule, setSelectedRestaurantIdForSchedule] =
+    useState<number | null>(null);
+  const [
+    selectedRestaurantIdForReservation,
+    setSelectedRestaurantIdForReservation,
+  ] = useState<number | null>(null);
 
   const fetchRestaurants = async () => {
     try {
@@ -41,16 +44,20 @@ const MakeReservation = () => {
     fetchRestaurants();
   }, []);
 
-  const handleReserve = (restaurantId: number) => {
-    navigate(`/reserve/${restaurantId}`);
+  const handleOpenScheduleModal = (restaurantId: number) => {
+    setSelectedRestaurantIdForSchedule(restaurantId);
   };
 
-  const handleOpenModal = (restaurantId: number) => {
-    setSelectedRestaurantId(restaurantId);
+  const handleCloseScheduleModal = () => {
+    setSelectedRestaurantIdForSchedule(null);
   };
 
-  const handleCloseModal = () => {
-    setSelectedRestaurantId(null);
+  const handleOpenReservationModal = (restaurantId: number) => {
+    setSelectedRestaurantIdForReservation(restaurantId);
+  };
+
+  const handleCloseReservationModal = () => {
+    setSelectedRestaurantIdForReservation(null);
   };
 
   return (
@@ -94,11 +101,19 @@ const MakeReservation = () => {
                 gap: "0.5rem",
               }}
             >
-              <button onClick={() => handleOpenModal(restaurant.restaurant_id)}>
+              <button
+                onClick={() =>
+                  handleOpenScheduleModal(restaurant.restaurant_id)
+                }
+              >
                 Ver Horarios
               </button>
 
-              <button onClick={() => handleReserve(restaurant.restaurant_id)}>
+              <button
+                onClick={() =>
+                  handleOpenReservationModal(restaurant.restaurant_id)
+                }
+              >
                 Reservar
               </button>
             </div>
@@ -106,10 +121,17 @@ const MakeReservation = () => {
         ))}
       </div>
 
-      {selectedRestaurantId !== null && (
+      {selectedRestaurantIdForSchedule !== null && (
         <ScheduleModal
-          restaurantId={selectedRestaurantId}
-          onClose={handleCloseModal}
+          restaurantId={selectedRestaurantIdForSchedule}
+          onClose={handleCloseScheduleModal}
+        />
+      )}
+
+      {selectedRestaurantIdForReservation !== null && (
+        <ReservationModal
+          restaurantId={selectedRestaurantIdForReservation}
+          onClose={handleCloseReservationModal}
         />
       )}
     </div>

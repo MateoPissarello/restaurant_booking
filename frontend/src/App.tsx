@@ -2,6 +2,8 @@ import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import LoginClient from "./pages/LoginClient";
 import MainMenu from "./pages/MainMenu";
 import MakeReservation from "./pages/MakeReservation";
+import MyBookings from "./pages/MyBookings";
+import MyProfile from "./pages/MyProfile";
 
 function App() {
   return (
@@ -10,6 +12,9 @@ function App() {
         <Route path="/login-client" element={<LoginClient />} />
         <Route path="/menu-client" element={<MainMenu />} />
         <Route path="/make-reservation" element={<MakeReservation />} />
+        <Route path="/my-reservations" element={<MyBookings />} />
+        <Route path="/my-profile" element={<MyProfile />} />
+
         {/* Aquí irán después las otras rutas */}
         {/* <Route path="/my-reservations" element={<MyReservations />} /> */}
         {/* <Route path="/my-profile" element={<MyProfile />} /> */}
