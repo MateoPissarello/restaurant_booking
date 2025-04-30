@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from fastapi import status as response_status
-from schemas.table_schemas import CreateTableBase, RetrieveTableBase
+from schemas.table_schemas import CreateTableBase, RetrieveTableBase, UpdateTableBase
 from fastapi import HTTPException
 from utils.RoleChecker import RoleChecker
 from utils.get_current_user import get_current_user
@@ -108,14 +108,23 @@ async def get_table_by_id(
 @router.patch("/update/{table_id}", status_code=response_status.HTTP_200_OK, response_model=RetrieveTableBase)
 async def update_table(
     table_id: int,
-    updated_data: CreateTableBase,
+    updated_data: UpdateTableBase,
     db: Session = Depends(get_db),
     current_user: TokenData = Depends(get_current_user),
     role_checker: RoleChecker = Depends(admin_only),
 ) -> RetrieveTableBase:
     dao = TableDAO(db)
+    updated_data = updated_data.model_dump(exclude_unset=True)
+    table = dao.get_table(table_id)
     try:
-        table = dao.update_table(table_id, updated_data.model_dump(exclude_unset=True))
+        if updated_data.get("number") and dao.get_table_in_restaurant_by_number(
+            restaurant_id=table.restaurant_id, number=updated_data["number"]
+        ):
+            raise HTTPException(
+                status_code=response_status.HTTP_400_BAD_REQUEST,
+                detail="Table with this number already exists in the restaurant",
+            )
+        table = dao.update_table(table_id, updated_data)
         if not table:
             raise HTTPException(
                 status_code=response_status.HTTP_404_NOT_FOUND,
@@ -159,4 +168,3 @@ async def delete_table(
             status_code=response_status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=str(e),
         )
-

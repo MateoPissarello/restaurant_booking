@@ -31,3 +31,11 @@ class UpdateUserBase(BaseModel):
     last_name: Optional[str] = Field(None, min_length=1, max_length=50)
     email: Optional[EmailStr] = Field(None)
     password: Optional[str] = Field(None, min_length=8, max_length=50)
+
+
+class UpdateUserBaseAdmin(BaseModel):
+    first_name: Optional[str] = Field(None, min_length=1, max_length=50)
+    last_name: Optional[str] = Field(None, min_length=1, max_length=50)
+    email: Optional[EmailStr] = Field(None)
+    password: Optional[str] = Field(None, min_length=8, max_length=50)
+    role: Optional[str] = Field(None, min_length=1, max_length=50)

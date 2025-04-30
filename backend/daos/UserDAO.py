@@ -21,7 +21,7 @@ class UserDAO:
         return users
 
     def update_user(self, user_id: int, updated_data: dict) -> User | None:
-        user = self.get_restaurant(user_id)
+        user = self.get_user(user_id)
         if user:
             for key, value in updated_data.items():
                 setattr(user, key, value)
@@ -30,7 +30,7 @@ class UserDAO:
             return user
 
     def delete_user(self, user_id: int) -> bool:
-        user_id = self.get_table(user_id)
+        user_id = self.get_user(user_id)
         if user_id:
             self.db.delete(user_id)
             self.db.commit()

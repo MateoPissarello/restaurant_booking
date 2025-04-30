@@ -21,7 +21,7 @@ class TableDAO:
         return tables
 
     def update_table(self, table_id: int, updated_data: dict) -> Table | None:
-        table = self.get_restaurant(table_id)
+        table = self.get_table(table_id)
         if table:
             for key, value in updated_data.items():
                 setattr(table, key, value)

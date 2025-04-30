@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, Body
 from fastapi import status as status_code
 
-from schemas.user_schemas import CreateUserBase, RetrieveUserBase, UpdateUserBase
+from schemas.user_schemas import CreateUserBase, RetrieveUserBase, UpdateUserBase, UpdateUserBaseAdmin
 from utils.password_hasher import Hash
 from database import get_db
 from sqlalchemy.orm import Session
@@ -75,7 +75,7 @@ async def get_user(
     return user_info
 
 
-@router.get("/get/all", response_model=list[RetrieveUserBase], status_code=status_code.HTTP_200_OK)
+@router.get("/get_all", response_model=list[RetrieveUserBase], status_code=status_code.HTTP_200_OK)
 async def get_all_users(
     current_user: TokenData = Depends(get_current_user),
     role_checker: RoleChecker = Depends(admin_only),
@@ -85,7 +85,7 @@ async def get_all_users(
     Get all users in the database.
     """
     dao = UserDAO(db)
-    users = dao.get_all_users()
+    users = dao.list_users()
     if not users:
         raise HTTPException(status_code=status_code.HTTP_404_NOT_FOUND, detail="No users found")
     return users
@@ -107,14 +107,16 @@ async def update_user(
         raise HTTPException(status_code=status_code.HTTP_404_NOT_FOUND, detail="User not found")
     if update_data.password:
         update_data.password = hash.get_password_hash(update_data.password)
-    updated_user = dao.update_user(current_user.user_id, update_data)
+
+    update_data_dict = update_data.model_dump(exclude_unset=True)
+    updated_user = dao.update_user(current_user.user_id, update_data_dict)
     return updated_user
 
 
 @router.patch("/update/user/{user_id}", response_model=RetrieveUserBase, status_code=status_code.HTTP_200_OK)
 async def update_user_admin(
     user_id: int,
-    update_data: UpdateUserBase = Body(...),
+    update_data: UpdateUserBaseAdmin = Body(...),
     current_user: TokenData = Depends(get_current_user),
     role_checker: RoleChecker = Depends(admin_only),
     db: Session = Depends(get_db),
@@ -124,11 +126,12 @@ async def update_user_admin(
     """
     dao = UserDAO(db)
     user_info = dao.get_user(user_id)
+    update_data_dict = update_data.model_dump(exclude_unset=True)
     if not user_info:
         raise HTTPException(status_code=status_code.HTTP_404_NOT_FOUND, detail="User not found")
     if update_data.password:
         update_data.password = hash.get_password_hash(update_data.password)
-    updated_user = dao.update_user(current_user.user_id, update_data)
+    updated_user = dao.update_user(current_user.user_id, update_data_dict)
     return updated_user
 
 

@@ -1,4 +1,5 @@
 from pydantic import BaseModel, Field
+from typing import Optional
 
 
 class CreateTableBase(BaseModel):
@@ -14,3 +15,8 @@ class RetrieveTableBase(BaseModel):
     capacity: int = Field(..., description="Seating capacity of the table")
 
     model_config = {"from_attributes": True}
+
+
+class UpdateTableBase(BaseModel):
+    number: Optional[int] = Field(None, description="Table number")
+    capacity: Optional[int] = Field(None, description="Seating capacity of the table")

@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from models import Booking
+from models import Booking, User
 from datetime import time
 from sqlalchemy import and_
 from datetime import date as dt
@@ -26,6 +26,14 @@ class BookingDao:
 
     def get_booking_by_restaurant(self, restaurant_id: int) -> List[Booking]:
         bookings = self.db.query(Booking).filter(Booking.restaurant_id == restaurant_id).all()
+        return bookings
+
+    def get_bookings_by_email(self, email: str) -> List[Booking]:
+        bookings = self.db.query(Booking).join(User, Booking.user_id == User.user_id).filter(User.email == email).all()
+        return bookings
+
+    def get_bookings(self) -> List[Booking]:
+        bookings = self.db.query(Booking).all()
         return bookings
 
     def update_booking(self, booking_id: int, updated_data: dict) -> Booking | None:
