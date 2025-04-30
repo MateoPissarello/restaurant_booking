@@ -15,7 +15,7 @@ const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
 }) => {
   const handleDelete = async () => {
     try {
-      const response = await fetch(`http://localhost:8000/booking/delete/${booking.booking_id}`, {
+      const response = await fetch(`http://localhost:8000/booking/delete/admin/${booking.booking_id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
