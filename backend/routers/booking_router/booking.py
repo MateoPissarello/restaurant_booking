@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends
+from utils.BookingFactory import StandardBookingCreator
 from sqlalchemy.orm import Session
 from fastapi import status as response_status
 from fastapi import HTTPException
-from utils.BookingFactory import BookingFactory
 from utils.RoleChecker import RoleChecker
 from utils.get_current_user import get_current_user
 from schemas.auth_schemas import TokenData
@@ -26,9 +26,13 @@ async def create_booking(
     current_user: TokenData = Depends(get_current_user),
     role_checker: RoleChecker = Depends(client_or_admin),
 ):
+    """
+    Endpoint para crear una nueva reserva.  Utiliza el Factory Method
+    para crear la reserva.
+    """
     booking_data = booking.model_dump(exclude_unset=True)
-    factory = BookingFactory(db)
-    created_booking = factory.create(booking_data=booking_data, user_id=current_user.user_id)
+    booking_creator = StandardBookingCreator(db)
+    created_booking = booking_creator.create_booking(booking_data=booking_data, user_id=current_user.user_id)
     return created_booking
 
 

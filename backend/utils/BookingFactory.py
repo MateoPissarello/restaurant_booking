@@ -1,22 +1,72 @@
+from abc import ABC, abstractmethod
 from daos.BookingDAO import BookingDao
 from daos.RestaurantDAO import RestaurantDAO
 from daos.TableDAO import TableDAO
 from daos.ScheduleDAO import ScheduleDAO
-
 from fastapi import HTTPException, status
 from models import Booking
 from sqlalchemy.orm import Session
+from typing import Dict
 
 
-class BookingFactory:
+class BookingCreator(ABC):  # Interfaz para el creador de reservas
+    """
+    Interfaz abstracta para la creación de reservas. Define el método
+    que las clases concretas deben implementar.
+    """
+
+    @abstractmethod
+    def create_booking(self, booking_data: Dict, user_id: int) -> Booking:
+        """
+        Crea una reserva.
+
+        Args:
+            booking_data (dict): Datos para la reserva.
+            user_id (int): ID del usuario que realiza la reserva.
+
+        Returns:
+            Booking: La reserva creada.
+
+        Raises:
+            NotImplementedError: Si el método no está implementado
+                                 en una clase concreta.
+        """
+        raise NotImplementedError("Subclasses must implement create_booking method")
+
+
+class StandardBookingCreator(BookingCreator):
+    """
+    Implementación concreta del creador de reservas para el flujo
+    estándar de creación.  Esta es tu BookingFactory adaptada.
+    """
+
     def __init__(self, db: Session):
+        """
+        Inicializa el creador de reservas estándar.
+
+        Args:
+            db (Session): La sesión de la base de datos de SQLAlchemy.
+        """
         self.db = db
         self.booking_dao = BookingDao(db)
         self.restaurant_dao = RestaurantDAO(db)
         self.table_dao = TableDAO(db)
         self.schedule_dao = ScheduleDAO(db)
 
-    def create(self, booking_data: dict, user_id: int) -> Booking:
+    def create_booking(self, booking_data: Dict, user_id: int) -> Booking:
+        """
+        Crea una reserva estándar con validaciones.
+
+        Args:
+            booking_data (dict): Datos para la reserva.
+            user_id (int): ID del usuario que realiza la reserva.
+
+        Returns:
+            Booking: La reserva creada.
+
+        Raises:
+            HTTPException: Si alguna de las validaciones falla.
+        """
         booking_data["user_id"] = user_id
         booking = Booking(**booking_data)
 
